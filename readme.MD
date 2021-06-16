@@ -21,7 +21,7 @@ FTP_USER and FTP_PASSWORD are provided by Ritani.
 
     const { login, logout, put, close } = require('@ritani/ftp-client');
 
-    await login(async () => {
+    login(async () => {
 
         const csv_filepath = 'absolute path to the feed csv file';
 

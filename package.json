@@ -1,6 +1,6 @@
 {
   "name": "@ritani/ftp-client",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "ftp client",
   "main": "src/index.js",
   "scripts": {
