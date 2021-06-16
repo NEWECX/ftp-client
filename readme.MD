@@ -8,7 +8,7 @@
 
 ## Step 1. create .env file in project directory
 
-cat .env
+cat ./.env
 
     FTP_HOST=diamondftp.ritani.com
     FTP_USER=...
@@ -25,8 +25,6 @@ FTP_USER and FTP_PASSWORD are provided by Ritani.
 
         const csv_filepath = 'absolute path to the feed csv file';
 
-        await logout();
-
         if (await put(local_filepath)) {
 
             console.log('ftp upload done!');
@@ -36,6 +34,8 @@ FTP_USER and FTP_PASSWORD are provided by Ritani.
             console.log('ftp upload failed');
 
         }
+
+        await logout();
 
         close();
     });
