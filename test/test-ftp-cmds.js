@@ -17,7 +17,7 @@ const {
     mkdir,
     rm,
     cd_up,
-} = require('../src')
+} = require('../src/ftp-cmds')
 
 const expect = chai.expect;
 

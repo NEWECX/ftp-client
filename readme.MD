@@ -10,7 +10,7 @@
 
 cat ./.env
 
-    FTP_HOST=diamondftp.ritani.com
+    FTP_HOST=ftp.ritani.com
     FTP_USER=...
     FTP_PASSWORD=...
     FTP_SECURE=true
