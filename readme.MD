@@ -13,7 +13,6 @@ cat ./.env
     FTP_HOST=ftp.ritani.com
     FTP_USER=...
     FTP_PASSWORD=...
-    FTP_SECURE=true
 
 FTP_USER and FTP_PASSWORD are provided by Ritani.
 
@@ -21,21 +20,16 @@ FTP_USER and FTP_PASSWORD are provided by Ritani.
 
     const { login, logout, put, close } = require('@ritani/ftp-client');
 
-    login(async () => {
+    await login();
 
-        const csv_filepath = 'absolute path to the feed csv file';
+    const csv_filepath = 'absolute path to the feed csv file';
 
-        if (await put(local_filepath)) {
+    if (await put(local_filepath)) {
+        console.log('ftp upload done!');
+    } else {
+        console.log('ftp upload failed');
+    }
 
-            console.log('ftp upload done!');
-
-        } else {
-
-            console.log('ftp upload failed');
-
-        }
-
-        await logout();
-
-        close();
-    });
+    await logout();
+    
+    close();

@@ -8,6 +8,7 @@ report
 download
 template
 data
+test/data
 *.log
 .eslintignore
 .eslintrc.json

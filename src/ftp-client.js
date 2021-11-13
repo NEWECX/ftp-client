@@ -3,7 +3,6 @@ const node_path = require('path');
 const { list, put, cwd, pwd, mkdir } = require('./ftp-cmds');
 const { certificate_lab_values } = require('@ritani/diamond-glossary');
 const { filename_values } = require('./assets-config');
-const configuration = require('./configuration');
 const get_latest_csv_file = require('./get-latest-csv-file');
 
 module.exports = {
@@ -13,16 +12,10 @@ module.exports = {
     ftp_upload_asset,
 };
 
-async function ftp_upload_all_files(data_dir) {
+async function ftp_upload_all_files(data_dir = node_path.join(process.cwd(), 'data')) {
 
-    if (!data_dir && configuration.get_data_directory()) {
-        data_dir = configuration.get_data_directory();
-    }
-    if (!data_dir) {
-        throw new Error('ftp_upload_all_files, empty data_dir');
-    }
     if (!fs.existsSync(data_dir)) {
-        throw new Error('ftp_upload_all_files, data_dir not found');
+        throw new Error(`ftp_upload_all_files, ${data_dir} not found`);
     }
     const [file, local_filepath] = get_latest_csv_file(data_dir);
     if (!local_filepath) {
@@ -34,7 +27,10 @@ async function ftp_upload_all_files(data_dir) {
 
     const inventory = await ftp_upload_inventory(local_filepath);
     const assets_path = node_path.join(data_dir, 'assets');
-    const assets = await ftp_upload_assets(assets_path);
+    let assets = [];
+    if (fs.existsSync(assets_path)) {
+        assets = await ftp_upload_assets(assets_path);
+    }
     return {
         inventory: {file, ...inventory},
         assets 
@@ -46,34 +42,20 @@ async function ftp_upload_all_files(data_dir) {
  * @param {*} local_filepath path to inventory.csv file or empty to use default
  * @returns 
  */
-async function ftp_upload_inventory(local_filepath) {
+async function ftp_upload_inventory(local_filepath = node_path.join(process.cwd(), 'data', 'inventory.csv')) {
 
-    let file;
-    if (!local_filepath && configuration.get_data_directory()) {
-        const data_dir = configuration.get_data_directory();
-        if (fs.existsSync(data_dir)) {
-            [ file, local_filepath ] = get_latest_csv_file(data_dir);
-        }
-    }
-
-    if (!local_filepath) {
-        throw new Error('ftp_upload_inventory, empty local_filepath(1)');
-    }
     if (!fs.existsSync(local_filepath)) {
         throw new Error(`ftp_upload_inventory, inventory_filepath ${local_filepath} not found`);
     }
 
     const current_directory = await pwd();
+
     if (current_directory !== '/' && !await cwd('/')) {
         throw new Error('ftp_upload_inventory, failed to switch ftp work directory to /');
     }
 
     if (await put(local_filepath)) {
-        if (file) {
-            return {status: 'OK', file};
-        } else {
-            return {status: 'OK'};
-        }
+        return {status: 'OK'};
     } else {
         return {status: 'error'};
     }
@@ -86,16 +68,7 @@ async function ftp_upload_inventory(local_filepath) {
  * @param {*} certificate_lab if defined, to upload specific diamond defined by certificate_lab and certificate_number
  * @param {*} certificate_number if defined, certificate_lab also need to define
  */
-async function ftp_upload_assets(assets_path, certificate_lab, certificate_number) {
-
-    if (!assets_path && configuration.get_data_directory()) {
-        const data_dir = configuration.get_data_directory();
-        assets_path = node_path.join(data_dir, 'assets');
-    }
-
-    if (!assets_path) {
-        throw new Error('ftp_upload_assets, empty assets_path');
-    }
+async function ftp_upload_assets(assets_path = node_path.join(process.cwd(), 'data', 'assets'), certificate_lab, certificate_number) {
 
     if (!fs.existsSync(assets_path)) {
         throw new Error(`ftp_upload_assets, assets_path ${assets_path} not found`);

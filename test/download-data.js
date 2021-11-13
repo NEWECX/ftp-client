@@ -24,6 +24,14 @@ async function download_data() {
     if (fs.existsSync(local_filepath)) {
         try {
             await extract(local_filepath, { dir: __dirname })
+            const parent_data_dir = node_path.join(node_path.dirname(__dirname), 'data');
+            if (!fs.existsSync(parent_data_dir)) {
+                fs.mkdirSync(parent_data_dir);
+            }
+            const parent_data_csv_file = node_path.join(parent_data_dir, 'inventory.csv');
+            if (!fs.existsSync(parent_data_csv_file)) {
+                fs.copyFileSync(node_path.join(__dirname, 'data', 'inventory.csv'), parent_data_csv_file)
+            }
             fs.unlinkSync(local_filepath);
         } catch (err) {
             console.error(err);

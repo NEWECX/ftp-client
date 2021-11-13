@@ -29,11 +29,12 @@ function login(callback, config = configuration.get_ftp_config()) {
         client = new Client();
         client.connect(config);
         client.on('end', () => {
-            resolve();
+            resolve(false);
             //console.log('connection ended');
         });
         client.on('ready', () => {
-            callback();
+            if (callback) resolve(callback());
+            else resolve(true);
         });
     });
 }
